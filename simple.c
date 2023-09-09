@@ -31,9 +31,11 @@ typedef struct CICLE_ CICLE;
 COLOR colorQuade1;
 COLOR colorQuade2;
 QUADE_POS quadePos1;
+QUADE_POS quadePos2;
 CICLE cicle1;
 int key_C = 0;
 int frequency = 0;
+int dir = 1;
 
 void
 init()
@@ -55,6 +57,16 @@ init()
   quadePos1.y_pos[1] = 100;
   quadePos1.y_pos[2] = 100;
   quadePos1.y_pos[3] = 0;
+
+  quadePos2.x_pos[0] = 200;
+  quadePos2.x_pos[1] = 200;
+  quadePos2.x_pos[2] = 150;
+  quadePos2.x_pos[3] = 150;
+
+  quadePos2.y_pos[0] = 100;
+  quadePos2.y_pos[1] = 150;
+  quadePos2.y_pos[2] = 150;
+  quadePos2.y_pos[3] = 100;
 
   cicle1.sides_ = 100;
   cicle1.r_ = 50;
@@ -105,13 +117,13 @@ display(void)
   }
   glBegin(GL_QUADS);
     glColor3f(colorQuade2.r_, colorQuade2.g_, colorQuade2.b_);
-    glVertex2i(200, 100);
+    glVertex2i(quadePos2.x_pos[0], quadePos2.y_pos[0]);
     glColor3f(colorQuade2.r_, colorQuade2.g_, colorQuade2.b_);
-    glVertex2i(200, 150);
+    glVertex2i(quadePos2.x_pos[1], quadePos2.y_pos[1]);
     glColor3f(colorQuade2.r_, colorQuade2.g_, colorQuade2.b_);
-    glVertex2i(150, 150);
+    glVertex2i(quadePos2.x_pos[2], quadePos2.y_pos[2]);
     glColor3f(colorQuade2.r_, colorQuade2.g_, colorQuade2.b_);
-    glVertex2i(150, 100);
+    glVertex2i(quadePos2.x_pos[3], quadePos2.y_pos[3]);
   glEnd();
   glFlush();  /* Single buffered, so needs a flush. */
 }
@@ -206,15 +218,34 @@ keyReleased(unsigned char key, int x, int y)
 void 
 timer(int value) 
 {
+  if(dir)
+  {
+    for(int i=0; i<4; i++)
+    {
+      quadePos2.x_pos[i]+=10;
+    }
+  }
+  else
+  {
+    for(int i=0; i<4; i++)
+    {
+      quadePos2.x_pos[i]-=10;
+    }
+  }
 
-  colorQuade2.r_ = (rand() % 10)/10.0;
-  colorQuade2.g_ = (rand() % 10)/10.0;
-  colorQuade2.b_ = (rand() % 10)/10.0;
+  if(quadePos2.x_pos[0]>=800 || quadePos2.x_pos[3]<=0)
+  {
+    dir = (dir+1)%2;
+    colorQuade2.r_ = (rand() % 10)/10.0;
+    colorQuade2.g_ = (rand() % 10)/10.0;
+    colorQuade2.b_ = (rand() % 10)/10.0;
+  }
+
   glutPostRedisplay();
   glutTimerFunc(frequency, timer, 0);
 }
 
-void 
+void
 timerWrapper() 
 {
   timer(0);
@@ -224,8 +255,7 @@ int
 main(int argc, char **argv)
 { 
 
-  int intervaloMinutos = 0; 
-  frequency = intervaloMinutos * 6 * 10;
+  frequency = 60; //quanto maior melhor
 
   init();
   glutInit(&argc, argv);
@@ -236,7 +266,7 @@ main(int argc, char **argv)
   glutKeyboardFunc(keyPressed);
   glutKeyboardUpFunc(keyReleased);
   glutTimerFunc(frequency, timer, 0);
-  glutIdleFunc(timerWrapper);
+  //glutIdleFunc(timerWrapper);
   glutMainLoop();
   return 0;             /* ANSI C requires main to return int. */
 }

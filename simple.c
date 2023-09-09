@@ -1,5 +1,6 @@
 /* X compile line: cc -o simple simple.c -lglut -lGLU -lGL -lXmu -lXext -lX11 -lm */
 #include <GL/glut.h>
+#include <stdio.h>
 #include <math.h>
 
 struct COLOR_
@@ -28,9 +29,11 @@ typedef struct QUADE_POS_ QUADE_POS;
 typedef struct CICLE_ CICLE;
 
 COLOR colorQuade1;
+COLOR colorQuade2;
 QUADE_POS quadePos1;
 CICLE cicle1;
 int key_C = 0;
+int frequency = 0;
 
 void
 init()
@@ -38,6 +41,10 @@ init()
   colorQuade1.r_ = 0.0;
   colorQuade1.g_ = 0.1;
   colorQuade1.b_ = 0.0;
+
+  colorQuade2.r_ = 1.0;
+  colorQuade2.g_ = 0.0;
+  colorQuade2.b_ = 0.0;
 
   quadePos1.x_pos[0] = 100;
   quadePos1.x_pos[1] = 100;
@@ -81,19 +88,30 @@ display(void)
       glVertex2i(quadePos1.x_pos[2], quadePos1.y_pos[2]);
       glColor3f(colorQuade1.r_, colorQuade1.g_, colorQuade1.b_);
       glVertex2i(quadePos1.x_pos[3], quadePos1.y_pos[3]);
+    glEnd();
   }
   else
   {
     glColor3f(colorQuade1.r_, colorQuade1.g_, colorQuade1.b_);
     glBegin(GL_TRIANGLE_FAN);
-      glVertex2f(cicle1.x_, cicle1.y_); // Centro do círculo
+      glVertex2f(cicle1.x_, cicle1.y_); 
       for (int i = 0; i <= cicle1.sides_; ++i) {
         float angle = 2.0f * M_PI * i / cicle1.sides_;
         float x = cicle1.x_ + cicle1.r_ * cos(angle);
         float y = cicle1.y_ + cicle1.r_ * sin(angle);
         glVertex2f(x, y);
       }
+    glEnd();
   }
+  glBegin(GL_QUADS);
+    glColor3f(colorQuade2.r_, colorQuade2.g_, colorQuade2.b_);
+    glVertex2i(200, 100);
+    glColor3f(colorQuade2.r_, colorQuade2.g_, colorQuade2.b_);
+    glVertex2i(200, 150);
+    glColor3f(colorQuade2.r_, colorQuade2.g_, colorQuade2.b_);
+    glVertex2i(150, 150);
+    glColor3f(colorQuade2.r_, colorQuade2.g_, colorQuade2.b_);
+    glVertex2i(150, 100);
   glEnd();
   glFlush();  /* Single buffered, so needs a flush. */
 }
@@ -185,9 +203,29 @@ keyReleased(unsigned char key, int x, int y)
   }
 }
 
+void 
+timer(int value) 
+{
+
+  colorQuade2.r_ = (rand() % 10)/10.0;
+  colorQuade2.g_ = (rand() % 10)/10.0;
+  colorQuade2.b_ = (rand() % 10)/10.0;
+  glutPostRedisplay();
+  glutTimerFunc(frequency, timer, 0);
+}
+
+void 
+timerWrapper() 
+{
+  timer(0);
+}
+
 int
 main(int argc, char **argv)
 { 
+
+  int intervaloMinutos = 0; 
+  frequency = intervaloMinutos * 6 * 10;
 
   init();
   glutInit(&argc, argv);
@@ -197,6 +235,8 @@ main(int argc, char **argv)
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyPressed);
   glutKeyboardUpFunc(keyReleased);
+  glutTimerFunc(frequency, timer, 0);
+  glutIdleFunc(timerWrapper);
   glutMainLoop();
   return 0;             /* ANSI C requires main to return int. */
 }

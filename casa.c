@@ -33,7 +33,7 @@ struct OBJECT_
 };
 
 OBJECT staticObject[STATIC_OBJECT_MAX];
-OBJECT dinamicObject[5][3];
+OBJECT dinamicObject[6][3];
 int staticObjectLen = 0;
 int dinamicObjectLen = 0;
 int frequence;
@@ -249,6 +249,10 @@ init()
   int y16[] = {70, y16[0]-12, y16[0]-2};
   initCloud(dinamicObject[3], x16, y16, drawCircle);
 
+  int x17[] = {700,  x17[0]-3, x17[0]-20};
+  int y17[] = {140, y15[0]-12, y15[0]-2};
+  initCloud(dinamicObject[4], x17, y17, drawCircle);
+
 }
 
 void 
@@ -292,7 +296,32 @@ keyPressed(unsigned char key, int x, int y)
     break;
   case 'r':
     r=(r+1)%2;
-    if(!r) init();
+    if(!r)
+    {
+      staticObject[0].color  = initColor(0.209804, 0.59804, 0.084314);
+      staticObject[1].color  = initColor(0.0f, 0.7f, 0.0f);
+      staticObject[2].color  = initColor(0.0f, 1.0f, 0.0f);
+      staticObject[3].color  = initColor(0.7f, 0.0f, 0.0f);
+      staticObject[4].color  = initColor(1.0f, 0.0f, 0.0f);
+      staticObject[5].color  = initColor(0.6f, 0.2f, 0.0f);
+      staticObject[6].color  = initColor(0.0f, 0.0f, 0.0f);
+      staticObject[7].color  = initColor(0.658824, 0.658824, 0.658824);
+      staticObject[8].color  = initColor(0.184314, 0.309804, 0.184314);
+      staticObject[9].color  = initColor(0.658824, 0.658824, 0.658824);
+      staticObject[10].color =  initColor(0.184314, 0.309804, 0.184314);
+      staticObject[11].color =  initColor(0.658824, 0.658824, 0.658824);
+      staticObject[12].color =  initColor(1.0f, 0.25f, 0.0f);
+      staticObject[13].color =  initColor(1.0f, 0.25f, 0.0f);
+      staticObject[14].color =  initColor(1.0f, 1.0f, 0.0f);
+
+      COLOR color = initColor(8.0f, 8.0f, 8.0f);
+      for(int i=0; i<dinamicObjectLen; i++)
+      {
+        dinamicObject[i][0].color = color;
+        dinamicObject[i][1].color = color;
+        dinamicObject[i][2].color = color;
+      }
+    }
     break;
   }
 }
@@ -304,14 +333,30 @@ timer(int value)
   for(int i=0; i<dinamicObjectLen; i++)
   {
     int velocidade = 1;
-    if(dinamicObject[i][0].dimensions.y_[0] < 0)
+    if(dinamicObject[i][0].dimensions.y_[0] < 0 || dinamicObject[i][0].dimensions.x_[0] < 0)
     {
+      if (i==dinamicObjectLen-1)
+      {
+        dinamicObject[i][0].dimensions.x_[0] = 700;
+        dinamicObject[i][1].dimensions.x_[0] = 700-3;
+        dinamicObject[i][2].dimensions.x_[0] = 700-20;
+        continue;
+      }
+      
       dinamicObject[i][0].dimensions.y_[0] = 280;
       dinamicObject[i][1].dimensions.y_[0] = 280 - 12;
       dinamicObject[i][2].dimensions.y_[0] = 280 -  2;
     }
-    else
+    else 
     {
+      if (i==dinamicObjectLen-1)
+      {
+        dinamicObject[i][0].dimensions.x_[0] -= velocidade;
+        dinamicObject[i][1].dimensions.x_[0] -= velocidade;
+        dinamicObject[i][2].dimensions.x_[0] -= velocidade;
+        continue;
+      }
+      
       dinamicObject[i][0].dimensions.y_[0] -= velocidade;
       dinamicObject[i][1].dimensions.y_[0] -= velocidade;
       dinamicObject[i][2].dimensions.y_[0] -= velocidade;
